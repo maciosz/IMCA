@@ -8,22 +8,21 @@ import pysam
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-r', dest='reads2reference', action='store', type=str,
+    parser.add_argument('-r', '--reads2reference',
+                        action='store', type=str,
                         help='.bam / .sam mapped to reference')
-    parser.add_argument('-c', dest='reads2contigs', action='store', type=str, nargs='+',
+    parser.add_argument('-c', '--reads2contigs',
+                        action='store', type=str, nargs='+',
                         help='.bam / .sam mapped to contigs')
-    parser.add_argument('-m', dest='contigs2reference', action='store', type=str, nargs='+',
-                        help='file with contigs mapped to reference')
-    #parser.add_argument('-d', dest='output_dir', action='store', type=str, default='merged',
-    #			help='destination to save output files (defaults to merged)')
-    parser.add_argument('-o', dest='output', action='store', type=str, default='merged.bam',
+    parser.add_argument('-m', '--contigs2reference',
+                        action='store', type=str, nargs='+',
+                        help='bam / sam with contigs mapped to reference')
+    parser.add_argument('-o', '--output',
+                        action='store', type=str, default='merged.bam',
                         help='output file (defaults to merged.bam)')
     arguments = parser.parse_args()
-    #check_arguments(arguments)
     return arguments
 
-#def check_arguments(arguments):
-#    pass
 #{contig: opis contigu}
 #gdzie opis contigu to slownik:
 #{obszar: obszar_na_ref}
@@ -49,7 +48,9 @@ def read_in_contig_mapping(filename):
         end = start + contig.query_alignment_length
         chromosome = contig.reference_name
         start_ref, end_ref = contig.reference_start, contig.reference_end
-        dictionary[contig][(start, end)] = (chromosome, start_ref, end_ref)
+        is_reverse = contig.is_reverse
+        dictionary[contig][(start, end)] = (chromosome, start_ref, end_ref,
+                                            is_reverse)
     return dictionary
 
 def transfer_read(read, contig_mapping):
@@ -58,10 +59,12 @@ def transfer_read(read, contig_mapping):
     contig_coords = find_contig_mapping(contig_mapping, start)
     if contig_coords is None:
         return # ?
-    chromosome, contig_start, _ = contig_coords
-    read.reference_start = contig_start + start
+    chromosome, contig_start, contig_end, is_reverse = contig_coords
     read.reference_id = chromosome
-    # powinnam uwzgledniac ze contig mogl sie zmapowac odwrotnie
+    if not is_reverse:
+        read.reference_start = contig_start + start
+    else:
+        read.reference_start = contig_end + start
 
 def find_contig_mapping(mapping, start=0):
     for on_contig, on_reference in mapping.items():
