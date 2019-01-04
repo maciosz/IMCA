@@ -9,10 +9,11 @@ At least not for these scripts.
 You might need to install some software needed to complete additional steps.
 Specifically,
 you need some mapper for your reads, mapper for contigs, and assembler to create contigs.
-The scripts was tested using minimap2 and velvet,
+The script was tested using minimap2 and velvet,
 but should work with output of any other software,
 as long as formats are correct:
-the mappings should be in .bam / .sam format,
+the mappings should be in .bam / .sam format
+(preferalby with CIGAR strings assigned to every mapping),
 and contigs in fasta format.
 
 #### Workflow
@@ -25,13 +26,12 @@ and contigs in fasta format.
 6. Transfer the mapping of the reads from contigs to reference.
 
 Steps from 1 to 5 can be done with any software of your choice.
-Step 6 can be done using transferMapping.py script.
+Step 6 can be done using `transferMapping.py` script.
 Below I present example workflow.
 
 1. Map reads to the reference.
 
-Using minimap2 (link):
-https://github.com/lh3/minimap2
+Using [minimap2](https://github.com/lh3/minimap2):
 
 `minimap2 -a -x sr reference.fa reads.fq > reads2reference.sam 2> mapping.err`
 
