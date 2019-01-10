@@ -20,6 +20,23 @@ def parse_arguments():
     parser.add_argument('-o', '--output',
                         action='store', type=str, default='merged.bam',
                         help='output file (defaults to merged.bam)')
+    parser.add_argument('-t', '--transfer-from-reference',
+                        action='store_true', #type=bool, default=False, const=True,
+                        help='transfer reads mapped to the reference?'
+                        ' By default I won\'t.')
+    parser.add_argument('-k', '--keep-unmapped-contigs',
+                        action='store_true', # type=bool, default=False, const=True,
+                        help='Add unmapped contigs to the references in the output?'
+                        ' By default I won\'t.')
+    parser.add_argument('-a', '--ambigous-mappings',
+                        action='store', type=str, default='best',
+                        help='What to do with ambigous mappings?\n'
+                        ' - best: keep the best mapping (default).'
+                        '         if there is none, choose randomly.\n\n'
+                        ' - best-rm: keep the best mapping.'
+                        '         if there is none, remove this contig/read.\n'
+                        '- rm: remove the ambigously mapped reads/contigs.\n'
+                        '- keep: keep all the best mappings.\n')
     arguments = parser.parse_args()
     return arguments
 
