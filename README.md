@@ -118,7 +118,7 @@ To see all the arguments available, run the script with `-h` option:
 usage: transfer_mapping.py [-h] [-r READS2REFERENCE]
                            [-c READS2CONTIGS [READS2CONTIGS ...]]
                            [-m CONTIGS2REFERENCE [CONTIGS2REFERENCE ...]]
-                           [-o OUTPUT]
+                           [-o OUTPUT] [-t] [-k] [-a AMBIGOUS_MAPPINGS]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -130,6 +130,19 @@ optional arguments:
                         bam / sam with contigs mapped to reference
   -o OUTPUT, --output OUTPUT
                         output file (defaults to merged.bam)
+  -t, --transfer-from-reference
+                        transfer reads mapped to the reference? By default I
+                        won't.
+  -k, --keep-unmapped-contigs
+                        Add unmapped contigs to the references in the output?
+                        By default I won't.
+  -a AMBIGOUS_MAPPINGS, --ambigous-mappings AMBIGOUS_MAPPINGS
+                        What to do with ambigous mappings? - best: keep the
+                        best mapping (default). if there is none, choose
+                        randomly. - best-rm: keep the best mapping. if there
+                        is none, remove this contig/read. - rm: remove the
+                        ambigously mapped reads/contigs. - keep: keep all the
+                        best mappings.
 ```
 
 #### Mandatory arguments:
