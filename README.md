@@ -2,7 +2,13 @@
 
 ## Improving Mapping with Contigs Assembly
 
-### Instalation
+some intro here...
+
+If you encounter any problems running IMCA
+ or have any comments or suggestions,
+ please let me know at a dot macioszek at mimuw.edu.pl.
+
+### Instalation and requirements
 
 No installation needed.
 At least not for these scripts.
@@ -15,6 +21,10 @@ as long as formats are correct:
 the mappings should be in .bam / .sam format
 (preferalby with CIGAR strings assigned to every mapping),
 and contigs in fasta format.
+
+`transfer_mapping.py` script requires python modules argparse and pysam.
+ It was tested with versions argparse1.2.1 and pysam0.9.1.4,
+ python2.7.6.
 
 ### Workflow
 
@@ -183,7 +193,7 @@ optional arguments:
  remove this read / contig.
  `rm` or `remove` means: remove everything that's not uniquely mapped.
  `keep` means: keep all the mappings.
- Keep in mind that if a contig is mapped to multiple positions,
+ Keep in mind that with this option if a contig is mapped to multiple positions,
  a read that is mapped uniquely to it
  will end up with ambigous mapping to the reference.
  

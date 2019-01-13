@@ -60,14 +60,29 @@ def read_in_contig_mapping(filename):
         if contig.is_unmapped:
             dictionary[contig] = None
             continue
-        #cigar = contig.cigartuples
+        cigar = contig.cigartuples
         start = contig.query_alignment_start
         end = start + contig.query_alignment_length
         chromosome = contig.reference_name
         start_ref, end_ref = contig.reference_start, contig.reference_end
         is_reverse = contig.is_reverse
-        dictionary[contig][(start, end)] = (chromosome, start_ref, end_ref,
-                                            is_reverse)
+        previous_start = start
+        previous_end = start
+        for what, how_many in cigar:
+            if what == 0 or what == 7 or what == 8: # match / mismatch
+                block_start = previous_end
+                block_end = block_start + how_many
+                previous_start, previous_end = block_start, block_end
+                dictionary[contig][(block_start, block_end)] = (chromosome, start_ref, end_ref,
+                                                                is_reverse)
+            elif what == 1: # insertion
+                block_start = previous_start
+                block_end = previous_end
+                dictionary[contig][(block_start, block_end)] = (chromosome, start_ref, end_ref,
+                                                                is_reverse)
+            else:   # deletion
+                previous_start = previous_end
+                previous_end += how_many
     return dictionary
 
 def transfer_read(read, contig_mapping):
@@ -81,7 +96,8 @@ def transfer_read(read, contig_mapping):
     if not is_reverse:
         read.reference_start = contig_start + start
     else:
-        read.reference_start = contig_end + start
+        read.reference_start = contig_end - start
+        read.is_reverse = not read.is_reverse
 
 def find_contig_mapping(mapping, start=0):
     for on_contig, on_reference in mapping.items():
@@ -89,19 +105,23 @@ def find_contig_mapping(mapping, start=0):
             return on_reference
     return None
 
-#def daj_nazwe_readu(read):
-#    return read.qname + str(int(read.is_read1))
-
 def merge_files(reads2reference, reads2contigs, contigs2reference,
-                outfile):
-    new_bam = pysam.AlignmentFile(outfile, "wb")
+                arguments):
+    outfile = arguments.output
+    new_bam = pysam.AlignmentFile(outfile, "wb", template = reads2reference)
     for nr, bam in enumerate(reads2contigs):
         contig_mapping = read_in_contig_mapping(contigs2reference[nr])
         for read in bam:
             transfer_read(read, contig_mapping)
             new_bam.write(read)
-    for read in reads2reference:
-        new_bam.write(read)
+    if arguments.transfer_from_reference:
+        for nr, bam in enumerate(reads2contigs):
+            for read in reads2reference:
+                transfer_read(read, contig_mapping)
+                new_bam.write(read)
+    else:
+        for read in reads2reference:
+            new_bam.write(read)
 
 def main():
     arguments = parse_arguments()
@@ -109,7 +129,7 @@ def main():
     reads2contigs = [pysam.AlignmentFile(filename) for filename in arguments.reads2contigs]
     contigs2reference = [pysam.AlignmentFile(filename) for filename in arguments.showcoords]
     merge_files(reads2reference, reads2contigs, contigs2reference,
-                arguments.output)
+                arguments)
 
 if __name__ == '__main__':
     main()
