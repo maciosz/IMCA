@@ -53,10 +53,13 @@ def parse_arguments():
 #   (1000, 2000): ('chr5', 1, 999)}
 #}
 
-def read_in_contig_mapping(filename):
-    bam = pysam.AlignmentFile(filename)
+def read_in_contig_mapping(bam):
     dictionary = collections.defaultdict(dict)
+    counter = 0
     for contig in bam:
+        counter += 1
+        if counter % 10 == 0:
+            print counter
         if contig.is_unmapped:
             dictionary[contig] = None
             continue
@@ -68,7 +71,11 @@ def read_in_contig_mapping(filename):
         is_reverse = contig.is_reverse
         previous_start = start
         previous_end = start
+        counter = 0
         for what, how_many in cigar:
+            counter += 1
+            if counter % 100 == 0:
+                print counter
             if what == 0 or what == 7 or what == 8: # match / mismatch
                 block_start = previous_end
                 block_end = block_start + how_many
@@ -116,18 +123,20 @@ def merge_files(reads2reference, reads2contigs, contigs2reference,
             new_bam.write(read)
     if arguments.transfer_from_reference:
         for nr, bam in enumerate(reads2contigs):
+            contig_mapping = read_in_contig_mapping(contigs2reference[nr])
             for read in reads2reference:
                 transfer_read(read, contig_mapping)
                 new_bam.write(read)
     else:
         for read in reads2reference:
             new_bam.write(read)
+    new_bam.close()
 
 def main():
     arguments = parse_arguments()
     reads2reference = pysam.AlignmentFile(arguments.reads2reference)
     reads2contigs = [pysam.AlignmentFile(filename) for filename in arguments.reads2contigs]
-    contigs2reference = [pysam.AlignmentFile(filename) for filename in arguments.showcoords]
+    contigs2reference = [pysam.AlignmentFile(filename) for filename in arguments.contigs2reference]
     merge_files(reads2reference, reads2contigs, contigs2reference,
                 arguments)
 
