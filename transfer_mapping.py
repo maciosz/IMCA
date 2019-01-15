@@ -21,11 +21,11 @@ def parse_arguments():
                         action='store', type=str, default='merged.bam',
                         help='output file (defaults to merged.bam)')
     parser.add_argument('-t', '--transfer-from-reference',
-                        action='store_true', #type=bool, default=False, const=True,
+                        action='store_true',
                         help='transfer reads mapped to the reference?'
                         ' By default I won\'t.')
     parser.add_argument('-k', '--keep-unmapped-contigs',
-                        action='store_true', # type=bool, default=False, const=True,
+                        action='store_true',
                         help='Add unmapped contigs to the references in the output?'
                         ' By default I won\'t.')
     parser.add_argument('-a', '--ambigous-mappings',
@@ -115,17 +115,19 @@ def find_contig_mapping(mapping, start=0):
 def merge_files(reads2reference, reads2contigs, contigs2reference,
                 arguments):
     outfile = arguments.output
-    new_bam = pysam.AlignmentFile(outfile, "wb", template = reads2reference)
+    new_bam = pysam.AlignmentFile(outfile, "wb", template=reads2reference)
     for nr, bam in enumerate(reads2contigs):
         contig_mapping = read_in_contig_mapping(contigs2reference[nr])
         for read in bam:
-            transfer_read(read, contig_mapping)
+            if not read.is_unmapped:
+                transfer_read(read, contig_mapping)
             new_bam.write(read)
     if arguments.transfer_from_reference:
         for nr, bam in enumerate(reads2contigs):
             contig_mapping = read_in_contig_mapping(contigs2reference[nr])
             for read in reads2reference:
-                transfer_read(read, contig_mapping)
+                if not read.is_unmapped:
+                    transfer_read(read, contig_mapping)
                 new_bam.write(read)
     else:
         for read in reads2reference:
