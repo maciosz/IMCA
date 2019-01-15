@@ -3,7 +3,7 @@
 ## Improving Mapping with Contigs Assembly
 
 When mapping reads from any NGS experiment
- (like ChIP-seq, RNA-seq etc.)
+ (like ChIP-seq, DNase-seq etc.)
  there is always some loss due to the differences
  between the reference genome and the actual genome being sequenced.
  IMCA attempts to reduce this loss.
@@ -28,7 +28,8 @@ If you encounter any problems running IMCA
 
 No installation needed.
 At least not for these scripts.
-You might need to install some software needed to complete additional steps.
+You might need to add executive rights using `chmod +x` command to the python scripts.
+Also you might need to install some software needed to complete additional steps.
 Specifically,
 you need some mapper for your reads, mapper for contigs, and assembler to create contigs.
 The script was tested using minimap2 and velvet,
@@ -41,6 +42,7 @@ and contigs in fasta format.
 `transfer_mapping.py` script requires python modules argparse and pysam.
  It was tested with versions argparse1.2.1 and pysam0.9.1.4,
  python2.7.6.
+`filter_velvet_contigs.py` needs argparse.
 
 ### Workflow
 
@@ -52,7 +54,7 @@ and contigs in fasta format.
 6. Transfer the mapping of the reads from contigs to reference.
 
 Steps from 1 to 5 can be done with any software of your choice.
-Step 6 can be done using `transferMapping.py` script.
+Step 6 can be done using `transfer_mapping.py` script.
 Below I present example workflow.
 
 1. Map reads to the reference.
@@ -114,7 +116,7 @@ like MUMmer, BLAST etc.
 Important note: the output of this step must be in sam or bam format.
 If you use a software that generates anything else,
 you need to convert it to sam / bam format before last step.
-(maybe some links)
+(For MUMmer, check out this [link](https://www.biostars.org/p/185384/).)
 For better accuracy, CIGAR strings should be available for every alignment.
 See documentation for details.
 
@@ -198,7 +200,7 @@ optional arguments:
  If you use some tool designed for aligning contigs to the reference
  it might need some additional parsing to retrieve CIGAR strings
  from it's output.
- You can read more about how CIGAR string is constructed here [link].
+ You can read more about how CIGAR string is constructed [here](https://www.drive5.com/usearch/manual/cigar.html).
 
 #### Optional arguments:
 
@@ -244,8 +246,8 @@ To add.
 
 ### References
 
-minimap2
-https://academic.oup.com/bioinformatics/article-abstract/34/18/3094/4994778?redirectedFrom=fulltext
+Heng Li. Minimap2: pairwise alignment for nucleotide sequences;
+Bioinformatics, Volume 34, Issue 18, 15 September 2018, Pages 3094–3100, https://doi.org/10.1093/bioinformatics/bty191
 
 D.R. Zerbino and E. Birney. 2008. Velvet: algorithms for de novo
 short read assembly using de Bruijn graphs.
