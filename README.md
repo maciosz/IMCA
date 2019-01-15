@@ -2,7 +2,23 @@
 
 ## Improving Mapping with Contigs Assembly
 
-some intro here...
+When mapping reads from any NGS experiment
+ (like ChIP-seq, RNA-seq etc.)
+ there is always some loss due to the differences
+ between the reference genome and the actual genome being sequenced.
+ IMCA attempts to reduce this loss.
+ In short, first contigs are assembled from sequenced reads -
+ they should correspond to the actual sequence of the genome.
+ Next, the contigs are aligned to the reference genome,
+ to find out where those sequences come from.
+ Then reads are mapped to them.
+ If there are any reads that didn't map to the reference
+ due to differences in sequence,
+ it might be that they will map to some contig
+ that will map to the reference;
+ then we can transfer coordinates of this read's mapping
+ to the reference.
+ (picture here would be nice)
 
 If you encounter any problems running IMCA
  or have any comments or suggestions,
@@ -210,6 +226,9 @@ optional arguments:
  a read that is mapped uniquely to it
  will end up with ambigous mapping to the reference.
  
+### Example datasets
+
+To add.
 
 ### References
 
