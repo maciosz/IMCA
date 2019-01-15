@@ -89,6 +89,18 @@ or have too small coverage.
 I encourage to look at the obtained contigs and decide what seems best
 to obtain better results.
 
+If you used velvet as assembler, you may use `filter_velvet_contigs.py` script.
+It doesn't work with other assemblers, because it uses
+velvet's naming convention.
+It can filter by contig's length and coverage.
+For example, run:
+
+`./filter_velvet_contigs.py -i velvet/contigs.fa -o velvet/filtered_contigs.fa -l 500 -c 5`
+
+to create file `filtered_contigs.fa`, that will contain
+these contigs from `velvet/contigs.fa` that were at least 500 bp long
+and had coverage higher or equal to 5.
+
 4. Map (align) contigs to the reference.
 
 Using minimap2:
