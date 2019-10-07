@@ -4,7 +4,7 @@
 
 When mapping reads from any NGS experiment
  (like ChIP-seq, DNase-seq etc.)
- there is always some loss due to the differences
+ there is always some loss of information due to the differences
  between the reference genome and the actual genome being sequenced.
  IMCA attempts to reduce this loss.
  In short, first contigs are assembled from sequenced reads -
@@ -57,7 +57,7 @@ Steps from 1 to 5 can be done with any software of your choice.
 Step 6 can be done using `transfer_mapping.py` script.
 Below I present example workflow.
 
-1. Map reads to the reference.
+**1. Map reads to the reference.**
 
 Using [minimap2](https://github.com/lh3/minimap2):
 
@@ -65,11 +65,12 @@ Using [minimap2](https://github.com/lh3/minimap2):
 
 You can also use any other mapper, like bowtie2, BWA, Tophat etc.
 
-2. Construct contigs from the reads.
+**2. Construct contigs from the reads.**
 
 Using [velvet](https://www.ebi.ac.uk/~zerbino/velvet/):
 
 `velveth velvet_output 27 -fastq reads.fq`
+
 `velvetg velvet_output`
 
 This will generate directory `velvet_output` with several files,
@@ -84,7 +85,7 @@ for more details.
 You can use any other assembler.
 The important thing is to get contigs in fasta format in this step.
 
-3. Potentially, filter contigs.
+**3. Potentially, filter contigs.**
 
 You might choose to filter out contigs that are too short,
 or have too small coverage.
@@ -103,7 +104,7 @@ to create file `filtered_contigs.fa`, that will contain
 these contigs from `velvet/contigs.fa` that were at least 500 bp long
 and had coverage higher or equal to 5.
 
-4. Map (align) contigs to the reference.
+**4. Map (align) contigs to the reference.**
 
 Using minimap2:
 
@@ -120,7 +121,7 @@ you need to convert it to sam / bam format before last step.
 For better accuracy, CIGAR strings should be available for every alignment.
 See documentation for details.
 
-5. Map reads to the mapped contigs.
+**5. Map reads to the mapped contigs.**
 
 This task is simmilar to the step 1; we just use mapped and potentially filtered contigs instead of reference.
 For example, using minimap2:
@@ -129,9 +130,9 @@ For example, using minimap2:
 
 But you can use Bowtie2, BWA, Tophat etc.
 
-6. Transfer the mapping of the reads from contigs to reference.
+**6. Transfer the mapping of the reads from contigs to reference.**
 
-`./transferMapping.py -r reads2reference.sam -c reads2contigs.sam -m contigs2reference.sam -o merged_mapping.bam`
+`./transfer_mapping.py -r reads2reference.sam -c reads2contigs.sam -m contigs2reference.sam -o merged_mapping.bam`
 
 This will generate file `merged_mapping.bam`
  with all the reads that were mapped to the reference
